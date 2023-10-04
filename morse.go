@@ -21,6 +21,7 @@ type Phrase string
 type Translator interface {
 	// translates the rune in the string into
 	// a set of characters representing this rune in Morse code.
+	// If the rune cannot be translated, it returns an empty string.
 	Translate(r rune) string
 }
 
@@ -29,7 +30,7 @@ type jsonTranslator struct {
 }
 
 // Func JSONTranslator returns a Translator that takes a table
-// of characters from a json file along the path.
+// of characters from a json file along the path "path".
 func JSONTranslator(path string) (*jsonTranslator, error) {
 	jsonFile, err := os.Open(path)
 	if err != nil {
@@ -54,13 +55,6 @@ func JSONTranslator(path string) (*jsonTranslator, error) {
 func (t jsonTranslator) Translate(r rune) string {
 	u := unicode.ToUpper(r)
 	return t.morseMap[u]
-}
-
-const jsonPath = "./morse-map.json"
-
-// Return default Translator.
-func DefaultTranslator() (*jsonTranslator, error) {
-	return JSONTranslator(jsonPath)
 }
 
 // Converts a string using a translator into a phrase in Morse code.
